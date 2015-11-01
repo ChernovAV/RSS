@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/components"
+    android:background="@color/colorFon">
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="130dp"
+            android:id="@+id/nss"
+            android:layout_centerVertical="true"
+            android:scaleType="centerCrop"
+            android:background="@mipmap/news" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/title"
+            android:textStyle="normal|bold"
+            android:textColor="@color/colorWhite"
+            android:layout_toRightOf="@+id/nss"
+            android:layout_marginLeft="5dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/date"
+            android:textColor="@color/colorWhite"
+            android:layout_below="@+id/title"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/nss" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/author"
+            android:textStyle="bold"
+            android:textColor="@color/colorWhite"
+            android:layout_below="@+id/date"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@+id/nss" />
+
+
+    </RelativeLayout>

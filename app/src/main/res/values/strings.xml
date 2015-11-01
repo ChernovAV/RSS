@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Android_RSS</string>
+    <string name="error">no internet connect or incorrect page</string>
+</resources>
