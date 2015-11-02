@@ -4,14 +4,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.support.v4.os.ResultReceiver;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.os.Handler;
 import android.widget.Toast;
@@ -86,8 +84,9 @@ public class RssFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        Intent intent = new Intent(Intent.ACTION_VIEW,
-                Uri.parse(adapter.getItem(position).getLink()));
+
+        Intent intent = new Intent("Browser");
+        intent.setData(Uri.parse(adapter.getItem(position).getLink()));
         startActivity(intent);
     }
 

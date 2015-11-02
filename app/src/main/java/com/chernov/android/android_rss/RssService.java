@@ -29,8 +29,6 @@ public class RssService extends IntentService {
     List<Item> news;
     Document doc = null;
 
-    static final String TAG = "myLog";
-
     public RssService() {
         super("RssService");
     }

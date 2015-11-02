@@ -21,6 +21,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".RssWebViewActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/title_activity_second">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="Browser" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="http" />
+            </intent-filter>
+        </activity>
+
       <service android:name=".RssService" />
     </application>
 
