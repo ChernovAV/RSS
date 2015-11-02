@@ -36,14 +36,14 @@ public class RssService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        /*
+        /**
          *  считываем ссылку ENDPOINT
          *  получаем распарсенную страницу,  List
          */
-
+        Log.e("myLog", "RssService onHandleIntent");
         connect();
 
-        /*
+        /**
          *  создаем объект bundle для передачи данных
          *  ложим/конвертируем ключь(ITEMS)-значение(Serializable)
          */

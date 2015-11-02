@@ -1,12 +1,11 @@
 package com.chernov.android.android_rss;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
 import android.support.v4.os.ResultReceiver;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,19 +13,22 @@ import android.widget.ListView;
 import android.os.Handler;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RssFragment extends ListFragment {
 
-    Parcelable state;
     RssAdapter adapter;
-    static final String TAG = "myLog";
+    List<Item> items = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // при смене ориентации экрана фрагмент сохраняет свое состояние. onDestroy не вызывается
         setRetainInstance(true);
+        // создаем адаптер
+        adapter = new RssAdapter(getActivity(), items);
+        setListAdapter(adapter);
     }
 
     @Override
@@ -34,9 +36,7 @@ public class RssFragment extends ListFragment {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
 
         // запускаем сервис, парсим страницу
-        if(adapter==null) {
-            startService();
-        }
+        startService();
 
         return view;
     }
@@ -46,11 +46,6 @@ public class RssFragment extends ListFragment {
         super.onViewCreated(view, savedInstanceState);
         // Set new items
         setListAdapter(adapter);
-        // Restore previous state (including selected item index and scroll position)
-        if(state != null) {
-            getListView().onRestoreInstanceState(state);
-            if(adapter!=null) adapter.notifyDataSetChanged();
-        }
     }
 
     // общение между потоками через ResultReceiver
@@ -60,18 +55,18 @@ public class RssFragment extends ListFragment {
         protected void onReceiveResult(int resultCode, Bundle resultData) {
 
             /*
-             *  если resultCode==1, принимаем List, создаем adapter и прикрепляем его к listView
-             *  создаем и присоединяем адаптер к listview
+             *  если resultCode==1, принимаем List
+             *  после передергиваем адаптер
             */
 
             if(resultCode==1) {
-                adapter = new RssAdapter(getActivity(),
-                        (List<Item>) resultData.getSerializable(RssService.ITEMS));
-                setListAdapter(adapter);
+                items.clear();
+                items.addAll((List<Item>) resultData.getSerializable(RssService.ITEMS));
             } else {
                 Toast.makeText(getActivity(), getString(R.string.error),
                         Toast.LENGTH_LONG).show();
             }
+            adapter.notifyDataSetChanged();
         };
     };
 
@@ -85,23 +80,16 @@ public class RssFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
 
-        Intent intent = new Intent("Browser");
-        intent.setData(Uri.parse(adapter.getItem(position).getLink()));
-        startActivity(intent);
+        FragmentManager manager = getActivity().getSupportFragmentManager();
+        Fragment fragment = new RssWebViewFragment(adapter.getItem(position).getLink());
+        manager.beginTransaction()
+              .replace(R.id.fragmentContainer, fragment)
+              .commit();
     }
 
     @Override
-    public void onPause() {
-        Log.e(TAG, "onPause");
-        // Save ListView state @ onPause
-        state = getListView().onSaveInstanceState();
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.e(TAG, "fragment onDestroyView");
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
     @Override

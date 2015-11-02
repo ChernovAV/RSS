@@ -58,6 +58,7 @@ public class RssAdapter extends ArrayAdapter<Item> {
 
         Picasso.with(context)
                 .load(items.get(position).getImage())
+                .tag(RssActivity.class)
                 //.resize(120, 100)
                 .transform(new RssTransformation())
                 //.centerCrop()

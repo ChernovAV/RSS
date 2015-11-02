@@ -1,22 +1,25 @@
 package com.chernov.android.android_rss;
 
 import android.content.res.Configuration;
-import android.os.Parcelable;
+import android.graphics.Bitmap;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
-public class RssWebViewFragment extends Fragment implements RssWebViewActivity.OnBackPressedListener {
+public class RssWebViewFragment extends Fragment implements RssActivity.OnBackPressedListener {
 
     private WebView webView;
+    ProgressBar progressBar;
     String url;
-    static final String TAG = "myLog";
+    TextView titleText;
 
     public RssWebViewFragment(String url) {
         this.url = url;
@@ -33,7 +36,6 @@ public class RssWebViewFragment extends Fragment implements RssWebViewActivity.O
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         webView.restoreState(savedInstanceState);
-        Log.e(TAG, "restoreState");
     }
 
     @Override
@@ -41,9 +43,7 @@ public class RssWebViewFragment extends Fragment implements RssWebViewActivity.O
         View v = inflater.inflate(R.layout.web_fragment, container, false);
 
         if (instance == null){
-            Log.e(TAG, "instance == null");
-            webView = (WebView) v.findViewById(R.id.webView);
-
+            setComponents(v);
             // Initialize the WebView
             webView.getSettings().setSupportZoom(true);
             // zoom - touch, button
@@ -51,35 +51,68 @@ public class RssWebViewFragment extends Fragment implements RssWebViewActivity.O
             webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
             webView.setScrollbarFadingEnabled(true);
             webView.getSettings().setLoadsImagesAutomatically(true);
-
-            // Load the URLs inside the WebView, not in the external web browser
-            webView.setWebViewClient(new WebViewClient());
+            webView.setWebViewClient(new myWebClient());
+            webView.getSettings().setJavaScriptEnabled(true);
             webView.loadUrl(url);
         }
 
         return v;
     }
 
+    private class myWebClient extends WebViewClient {
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            // TODO Auto-generated method stub
+            super.onPageStarted(view, url, favicon);
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            // TODO Auto-generated method stub
+            titleText.setText(url);
+            view.loadUrl(url);
+            return true;
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            // TODO Auto-generated method stub
+            super.onPageFinished(view, url);
+            progressBar.setVisibility(View.GONE);
+        }
+    }
+
+    public void setComponents(View v) {
+        webView = (WebView) v.findViewById(R.id.webView);
+        progressBar = (ProgressBar)v.findViewById(R.id.progressBar);
+        titleText = (TextView)v.findViewById(R.id.titleTextView);
+    }
+
+    private void backList() {
+        FragmentTransaction fragmentTransaction = getFragmentManager()
+                .beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainer, new RssFragment());
+        fragmentTransaction.commit();
+    }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        Log.e(TAG, "onConfigurationChanged");
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         webView.saveState(outState);
-        Log.e(TAG, "onSaveInstanceState");
     }
 
     @Override
     public void onBackPressed() {
         if (webView.canGoBack()) {
             webView.goBack();
-        } else {
-            getActivity().finish();
-        }
+        } else
+            backList();
     }
 
     @Override

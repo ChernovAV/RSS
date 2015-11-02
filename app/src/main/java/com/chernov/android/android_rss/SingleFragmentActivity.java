@@ -1,27 +1,35 @@
 package com.chernov.android.android_rss;
 
 import android.os.Bundle;
+
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.widget.Toast;
 
-public class RssWebViewActivity extends FragmentActivity {
+public abstract class SingleFragmentActivity extends FragmentActivity {
+
+    protected abstract Fragment createFragment();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.web_main);
+        setContentView(R.layout.activity_main);
 
         FragmentManager manager = getSupportFragmentManager();
         Fragment fragment = manager.findFragmentById(R.id.fragmentContainer);
 
         if (fragment == null) {
-            fragment = new RssWebViewFragment(getIntent().getData().toString());
+            fragment = createFragment();
             manager.beginTransaction()
-                    .add(R.id.fragmentContainer, fragment)
-                    .commit();
+                .add(R.id.fragmentContainer, fragment)
+                .commit();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.gc();
     }
 
     public interface OnBackPressedListener {
@@ -33,7 +41,6 @@ public class RssWebViewActivity extends FragmentActivity {
         FragmentManager fm = getSupportFragmentManager();
         OnBackPressedListener backPressedListener = null;
         for (Fragment fragment: fm.getFragments()) {
-
             if (fragment instanceof OnBackPressedListener) {
                 backPressedListener = (OnBackPressedListener) fragment;
                 break;
@@ -47,4 +54,3 @@ public class RssWebViewActivity extends FragmentActivity {
         }
     }
 }
-
